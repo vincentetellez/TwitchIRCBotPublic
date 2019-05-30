@@ -20,6 +20,8 @@ def setData( d ):
     global _data
     _data = d
 
+# Commands:
+
 # Prints "This is a test"
 def command_test( sender, paramArray ):
     send_message( _q, _CHAN, 'This is a test.')
