@@ -40,6 +40,9 @@ NICK = "Username"                               # Nickname = Twitch username
 PASS = "oauth:12345abc"                         # www.twitchapps.com/tmi/ will help to retrieve the required authkey
 
 DBUG = True                                     # Enables verbose logging
+
+RATELIMIT = 20 / 30                             # Default rate limit is 20 messages per 30 seconds
+
 VIEWERS = []
 ENDNAMES = False
 
@@ -108,6 +111,8 @@ def import_alerts():
 # --------------------------------------------- Start Thread Functions ---------------------------------------------
 def sendFromQueue():
 
+    lastSent = time.time()
+
     while True:
 
         # Check if the thread should exit
@@ -117,9 +122,10 @@ def sendFromQueue():
             return
 
         # Check for any items in the queue which need to be sent
-        if not messageQueue.empty():
+        if not messageQueue.empty() and time.time() > lastSent + RATELIMIT:
             msg = messageQueue.get()
             con.send( msg )
+            lastSent = time.time()
             if DBUG:
                 print( "< " + msg.decode().strip() )
 
